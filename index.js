@@ -6,8 +6,9 @@ class Block {
     this.timestamp = timestamp;
     this.data = data;
     this.lastHash = lastHash;
+    this.nonce = Math.random();
     this.hash = sha256(
-      this.index + this.timestamp + this.data + this.lastHash
+      this.index + this.timestamp + this.data + this.lastHash + this.nonce
     );
   }
 }
@@ -19,9 +20,19 @@ class Blockchain {
     }
 
     addBlock(data, prevBlock = this.chain[this.chain.length-1]) {
-        const block = new Block(prevBlock.index+1, Date.now(), data, prevBlock.hash);
+        let block;
+        do {
+            block = new Block(prevBlock.index+1, Date.now(), data, prevBlock.hash);
 
+        } while (!this.verify(block));
+        
         this.chain.push(block);
+    }
+
+    verify(block) {
+        if (block.hash > '00005d77d925e6687b6912c20c3d6026bc503c9a15b364a971e78d99e31d513f')
+            return false
+        return true;
     }
 
     timer(ms) {
@@ -29,13 +40,9 @@ class Blockchain {
     }
 }
 
-//async function test() {
-    const fooBlockChain = new Blockchain();
-    fooBlockChain.addBlock('First Block');
-    //await fooBlockChain.timer(1500);
-    fooBlockChain.addBlock('Second Block');
-    //await fooBlockChain.timer(1500);
-    fooBlockChain.addBlock('Third Block');
+const fooBlockChain = new Blockchain();
+fooBlockChain.addBlock('First Block');
+fooBlockChain.addBlock('Second Block');
+fooBlockChain.addBlock('Third Block');
 
-    console.log(fooBlockChain);
-//}
+console.log(fooBlockChain);
