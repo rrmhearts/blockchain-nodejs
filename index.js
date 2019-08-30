@@ -1,16 +1,23 @@
 const sha256 = require('sha256');
 
 class Block {
-  constructor(index, timestamp, data, lastHash) {
-    this.index = index;
-    this.timestamp = timestamp;
-    this.data = data;
-    this.lastHash = lastHash;
-    this.nonce = Math.random();
-    this.hash = sha256(
-      this.index + this.timestamp + this.data + this.lastHash + this.nonce
-    );
-  }
+    constructor(index, timestamp, data, lastHash) {
+        this.index = index;
+        this.timestamp = timestamp;
+        this.data = data;
+        this.lastHash = lastHash;
+        this.nonce = Math.random();
+        this.hash = sha256(
+            this.index + this.timestamp + this.data + this.lastHash + this.nonce
+        );
+    }
+    updateBlock(nonce)
+    {
+        this.nonce = nonce;
+        this.hash = sha256(
+            this.index + this.timestamp + this.data + this.lastHash + this.nonce
+        );
+    }
 }
 
 class Blockchain {
@@ -20,17 +27,17 @@ class Blockchain {
     }
 
     addBlock(data, prevBlock = this.chain[this.chain.length-1]) {
-        let block;
-        do {
-            block = new Block(prevBlock.index+1, Date.now(), data, prevBlock.hash);
+        let block = new Block(prevBlock.index+1, Date.now(), data, prevBlock.hash);
 
+        do {
+            block.updateBlock(Math.random());
         } while (!this.verify(block));
         
         this.chain.push(block);
     }
 
     verify(block) {
-        if (block.hash > '00005d77d925e6687b6912c20c3d6026bc503c9a15b364a971e78d99e31d513f')
+        if (block.hash > '0000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
             return false
         return true;
     }
